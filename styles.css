@@ -500,6 +500,19 @@ ul { padding: 0; list-style: none; }
 
 .cat-add-row input:focus { border-color: var(--primary); }
 
+/* ---------- 数据备份 ---------- */
+
+.backup-tip { margin-bottom: 10px; }
+
+.backup-row { display: flex; gap: 10px; }
+
+.backup-row .btn {
+  flex: 1;
+  text-align: center;
+  display: block;
+  padding: 10px 0;
+}
+
 /* ---------- 底部导航 ---------- */
 
 .tabbar {

@@ -97,6 +97,17 @@
       </div>
     </div>
 
+    <div class="manage-block">
+      <div class="block-head"><h3>数据备份</h3></div>
+      <p class="muted small backup-tip">菜单只存在本机，清缓存或换设备前请先导出备份。</p>
+      <div class="backup-row">
+        <button class="btn ghost" data-action="export-data">导出备份</button>
+        <label class="btn ghost">导入恢复
+          <input type="file" id="importFile" accept=".json,application/json" hidden>
+        </label>
+      </div>
+    </div>
+
     <div class="manage-block" id="installBlock" hidden>
       <div class="block-head"><h3>安装到主屏幕</h3></div>
       <p class="muted small" id="installHint">像 App 一样打开，离线也能点菜。</p>

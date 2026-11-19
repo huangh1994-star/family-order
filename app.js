@@ -492,6 +492,79 @@ function deleteCategory(id) {
   renderAll();
 }
 
+/* ---------- 数据备份 ---------- */
+
+function buildBackup() {
+  return {
+    app: 'family-order',
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    categories: state.categories.map((c) => ({ id: c.id, name: c.name })),
+    dishes: state.dishes,
+  };
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(buildBackup(), null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `家庭点餐备份-${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}.json`;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+async function importData(file) {
+  let raw;
+  try {
+    raw = JSON.parse(await file.text());
+  } catch (e) {
+    alert('文件不是有效的备份（JSON 解析失败）');
+    return;
+  }
+  if (!raw || !Array.isArray(raw.dishes) || !Array.isArray(raw.categories)) {
+    alert('文件内容不是家庭点餐的备份');
+    return;
+  }
+
+  const categories = raw.categories
+    .filter((c) => c && typeof c.name === 'string' && c.name.trim())
+    .map((c) => ({
+      id: typeof c.id === 'string' ? c.id : uid(),
+      name: c.name.trim().slice(0, 8),
+    }));
+
+  const catIds = new Set(categories.map((c) => c.id));
+  const dishes = raw.dishes
+    .filter((d) => d && typeof d.name === 'string' && d.name.trim())
+    .map((d) => ({
+      id: typeof d.id === 'string' ? d.id : uid(),
+      name: d.name.trim().slice(0, 20),
+      categoryId: catIds.has(d.categoryId) ? d.categoryId : null,
+      chef: String(d.chef || '').trim().slice(0, 10),
+      method: String(d.method || '').trim().slice(0, 10),
+      image: typeof d.image === 'string' && d.image.startsWith('data:image/') ? d.image : null,
+      steps: String(d.steps || '').trim(),
+      createdAt: typeof d.createdAt === 'number' ? d.createdAt : Date.now(),
+    }));
+
+  if (!confirm(`导入会覆盖当前菜单和分类。\n备份中有 ${dishes.length} 道菜、${categories.length} 个分类，确定导入吗？`)) return;
+
+  state.dishes = dishes;
+  state.categories = categories;
+  state.picked = state.picked.filter((p) => dishes.some((d) => d.id === p.dishId));
+  if (currentCategory !== 'all' && !catIds.has(currentCategory)) currentCategory = 'all';
+
+  if (!save()) return;
+  renderAll();
+  switchView('me');
+  alert(`导入成功：${dishes.length} 道菜、${categories.length} 个分类`);
+}
+
 /* ---------- 图片压缩 ---------- */
 
 function compressImage(file) {
@@ -590,6 +663,9 @@ function bind() {
       case 'delete-cat':
         deleteCategory(id);
         break;
+      case 'export-data':
+        exportData();
+        break;
     }
   });
 
@@ -600,6 +676,12 @@ function bind() {
 
   // 图片选择
   document.addEventListener('change', async (e) => {
+    if (e.target.id === 'importFile') {
+      const f = e.target.files && e.target.files[0];
+      e.target.value = '';
+      if (f) await importData(f);
+      return;
+    }
     if (e.target.id !== 'dishImageInput') return;
     const file = e.target.files && e.target.files[0];
     if (!file) return;

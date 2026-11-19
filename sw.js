@@ -1,6 +1,6 @@
 /* 家庭点餐 Service Worker：缓存优先 + 版本号，发布新版本时递增 VERSION 强制更新 */
 
-const VERSION = '2';
+const VERSION = '3';
 const CACHE_NAME = 'family-order-v' + VERSION;
 const ASSETS = [
   './',

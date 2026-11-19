@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7efe6">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="家庭点餐">
+<title>家庭点餐</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <h1>家庭点餐</h1>
+  <p class="subtitle">想吃什么，点一下</p>
+</header>
+
+<main class="container">
+
+  <!-- 菜单 -->
+  <section id="view-menu" class="view">
+    <div class="menu-head">
+      <div class="menu-head-text">
+        <p class="greeting">今天想吃点什么？</p>
+        <h2 class="menu-title">菜单上有 <span id="dishTotal">0</span> 道菜</h2>
+      </div>
+      <button class="btn ghost" data-action="goto-add-dish">上架菜品</button>
+    </div>
+
+    <div class="menu-body">
+      <aside class="cat-rail" id="catRail"></aside>
+      <div class="dish-grid" id="dishGrid"></div>
+    </div>
+
+    <div id="menuEmpty" class="empty" hidden>
+      <p class="empty-title">菜单还是空的</p>
+      <p class="muted">先上架几道家常菜吧</p>
+      <button class="btn primary" data-action="goto-add-dish">上架第一道菜</button>
+    </div>
+  </section>
+
+  <!-- 已点 -->
+  <section id="view-picked" class="view" hidden>
+    <div class="list-head">
+      <div>
+        <h2 class="menu-title">已点清单</h2>
+        <p class="muted small">今天的已点菜品 · 共 <span id="pickedCount">0</span> 份</p>
+      </div>
+      <button class="btn ghost" data-action="goto-menu">继续点菜</button>
+    </div>
+
+    <div id="pickedList" class="picked-list"></div>
+
+    <div id="pickedEmpty" class="empty" hidden>
+      <p class="empty-title">还没有点菜</p>
+      <p class="muted">去菜单里挑几道想吃的吧</p>
+      <button class="btn primary" data-action="goto-menu">去点菜</button>
+    </div>
+
+    <div id="finishWrap" class="finish-wrap" hidden>
+      <button class="btn end" data-action="end-meal">聚餐结束</button>
+      <p class="muted small center">结束后会清空所有已点菜品，请确认大家都吃好了</p>
+    </div>
+  </section>
+
+  <!-- 我的 -->
+  <section id="view-me" class="view" hidden>
+    <div class="stat-card">
+      <div class="stat"><strong id="statDishes">0</strong><span>在架菜品</span></div>
+      <div class="stat"><strong id="statCats">0</strong><span>分类</span></div>
+      <div class="stat"><strong id="statPicked">0</strong><span>已点份数</span></div>
+    </div>
+
+    <div class="manage-block">
+      <div class="block-head">
+        <h3>菜品管理</h3>
+        <button class="btn ghost small" data-action="goto-add-dish">添加菜品</button>
+      </div>
+      <div id="manageList" class="manage-list"></div>
+      <div id="manageEmpty" class="empty small" hidden>
+        <p class="muted">还没有菜品，点右上角添加</p>
+      </div>
+    </div>
+
+    <div class="manage-block">
+      <div class="block-head"><h3>分类管理</h3></div>
+      <div id="catList" class="cat-manage-list"></div>
+      <div class="cat-add-row">
+        <input id="newCatName" maxlength="8" placeholder="新分类名称">
+        <button class="btn primary small" id="addCatBtn">添加</button>
+      </div>
+    </div>
+
+    <div class="manage-block" id="installBlock" hidden>
+      <div class="block-head"><h3>安装到主屏幕</h3></div>
+      <p class="muted small" id="installHint">像 App 一样打开，离线也能点菜。</p>
+      <button class="btn primary block" id="installBtn" hidden>安装</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- 底部导航 -->
+<nav class="tabbar">
+  <button class="tab active" data-view="menu">菜单</button>
+  <button class="tab" data-view="picked">已点<span id="pickedBadge" class="badge" hidden></span></button>
+  <button class="tab" data-view="me">我的</button>
+</nav>
+
+<!-- 弹层 -->
+<div class="modal" id="detailModal" hidden></div>
+<div class="modal" id="dishModal" hidden></div>
+
+<script src="app.js"></script>
+</body>
+</html>
